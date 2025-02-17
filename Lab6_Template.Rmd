@@ -1,0 +1,152 @@
+---
+title: "Lab6_Template"
+author: "Stutie Banerjie"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, class.source="bg-success")
+```
+
+### Setup
+
+```{r message=FALSE, warning=FALSE}
+# Load packages needed
+library(tidyverse)
+library(openintro)
+library(hexbin)
+```
+
+
+```{r}
+# Create condensed dataframe loans
+loans <- loans_full_schema %>%
+  select(loan_amount, interest_rate, term, grade, 
+         state, annual_income, homeownership, debt_to_income)
+glimpse(loans)
+```
+
+<br>
+
+#### Using the `loans` dataframe create a histogram for `interest_rate`.  The histogram should have an appropriate amount of bins.  Be sure to provide an apprppriate title and axis labels.
+
+```{r}
+ggplot(loans, aes(x = interest_rate)) +
+  geom_histogram(binwidth = 1.3) +
+  labs(
+    x = "Interest Rate (%)",
+    y = "Frequency",
+    title = "Frequency of Interest Rates)"
+  )
+```
+
+
+#### Describe the shape of the distribution of `interest_rate`. 
+
+The distribution of Interest Rate is skewed right.
+
+<br>
+
+#### Using the `loans` dataframe, create a facet histogram of `interest_rate` broken down by `grade`.
+
+```{r}
+ggplot(loans, aes(x = interest_rate)) +
+  geom_histogram(binwidth = 2) +
+  labs(
+    x = "Interest Rate (%)",
+    y = "Frequency",
+    title = "Frequency of Interest Rates)"
+  )+
+  facet_wrap(~ grade, nrow=2)
+```
+
+<br>
+
+#### Using the `loans` dataframe, create a density plot of `interest_rate` separated by `grade`.  Use an appropriate adjustment value.  Use appropriate titles and labels.  
+
+
+```{r}
+ggplot(loans, aes(x = interest_rate)) +
+  geom_density(adjust=4)+
+  labs(
+    x = "Interest Rate (%)",
+    y = "Density",
+    title = "Frequency of Interest Rates)"
+  )
+```
+
+#### Do you notice anything unusual about this graph?  Explain. 
+
+It's incredibly skewed right, similar to the previously developed histogram. It's interesting to see how the histogram and the density graph mimics each other's shapes despite not being the exact same. 
+
+<br>
+
+#### Using the loans dataframe, create boxplots of `interest_rate` sepearted by `grade`, coloring each box a different color based on `grade`.  Use appropriate labels and titles. 
+
+```{r}
+ggplot(loans, aes(x = interest_rate,
+                  y = grade, fill=grade)) +
+  geom_boxplot() +
+  labs(
+    x = "Interest Rate (%)",
+    y = NULL,
+    title = "Distribution of Interest Rates", 
+    subtitle = "by Grade"
+  )
+```
+
+
+<br>
+
+#### Using the loans dataframe and the idea that you can filter within the ggplot function, create a hexplot of `loan_amount` vs. `interest_rate` for `grade` (Hint: use the `fill` argument) values A thru F (exclude grade G).  Please provide appropriate title(s) and labels. 
+
+```{r}
+ggplot(loans %>% filter(grade %in% c("A", "B", "C", "D", "E", "F")), 
+       aes(x = loan_amount, y = interest_rate, fill = grade))+
+  geom_hex() +
+  labs(title = "Hexplot of Loan Amount vs. Interest Rate",
+  x = "Loan Amount ($)",
+  y = "Interest Rate (%)",
+  fill = "Grade")
+```
+
+<br>
+
+
+#### Using the `loans` dataframe find the min, med, max, IQR, and num. of observations for `interest_rate` by `grade`. Label your statistics appropriately.
+
+```{r}
+loans %>%
+  group_by(grade) %>%
+  summarise(mean_intRate = mean(interest_rate), 
+            sd_intRate = sd(interest_rate), 
+            min_intRate = min(interest_rate),
+            max_intRate = max(interest_rate)
+            )
+```
+
+
+<br>
+
+#### Using the `loans` dataframe, create a segmented bar chart of `state` segmented by `homeownership`.  The bars should be horizontal (not vertical) and the length of the bars should be the count for each state.  The graph should have appropriate titles, and labels.
+
+```{r}
+ggplot(loans, aes(x = state, 
+                  fill = homeownership)) +
+  geom_bar()
+```
+
+<br>
+
+#### Using the `loans` dataframe, create a frequency table of `grade`.
+
+```{r}
+loans %>%
+  count(grade)
+```
+
+
+
+
+
+
